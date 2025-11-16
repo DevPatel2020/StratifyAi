@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StratifyAI - Strategic Thinking Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            background: #0f1115;
+            color: #eaeef2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            color: white;
+            font-size: 14px;
+            -webkit-app-region: drag;
+        }
+
+        .title-text {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+            -webkit-app-region: no-drag;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .window-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-close {
+            background: #ff5f57;
+        }
+
+        .btn-close:hover {
+            background: #ff3b30;
+        }
+
+        .btn-minimize {
+            background: #ffbd2e;
+        }
+
+        .btn-minimize:hover {
+            background: #ff9500;
+        }
+
+        .btn-maximize {
+            background: #28ca42;
+        }
+
+        .btn-maximize:hover {
+            background: #30d158;
+        }
+
+        .update-paths-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .update-paths-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .update-paths-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* App Shell */
+        .app {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: #0c0e12;
+            border-right: 1px solid #1e2430;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .sidebar .sidebar-min-btn {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            background: #161a22;
+            color: #cfd8e3;
+            border: 1px solid #1e2430;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .sidebar .sidebar-min-btn:hover { background: #1a1f29; }
+        .sidebar.collapsed {
+            width: 0;
+            border-right: none;
+        }
+        .sidebar.collapsed .brand,
+        .sidebar.collapsed .new-chat,
+        .sidebar.collapsed .list { display: none; }
+        .sidebar .brand {
+            padding: 14px 16px;
+            border-bottom: 1px solid #1e2430;
+            font-weight: 600;
+            color: #c3d4ff;
+        }
+        .sidebar .new-chat {
+            margin: 12px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .sidebar .list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 8px 16px;
+        }
+        .sidebar .conv-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #cfd8e3;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background .2s ease;
+        }
+        .sidebar .conv-item:hover {
+            background: #141820;
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid #1e2430;
+            background: #0f1115;
+        }
+        .header-title {
+            font-weight: 600;
+            color: #cfd8e3;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+        .header-btn {
+            background: #161a22;
+            color: #cfd8e3;
+            border: 1px solid #1e2430;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .header-btn:hover { background: #1a1f29; }
+
+        .chat-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            overflow-y: auto;
+            padding: 24px;
+            background: #0f1115;
+            position: relative;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            max-width: 800px;
+            animation: fadeIn 0.2s ease-in;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: #1a73e8;
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: #12161f;
+            color: #eaeef2;
+            border: 1px solid #1e2430;
+            border-bottom-left-radius: 4px;
+        }
+
+        .loading {
+            background: #12161f;
+            color: #9aa4b2;
+            font-style: italic;
+        }
+
+        .thinking-panel {
+            border-left: 1px solid #1e2430;
+            background: #0c0e12;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+        .thinking-panel.hidden { display: none; }
+        .thinking-panel .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1e2430;
+            color: #cfd8e3;
+            font-weight: 600;
+        }
+        .thinking-paths { padding: 16px; }
+
+        .paths-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .thinking-path {
+            background: #12161f;
+            border: 1px solid #1e2430;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .thinking-path:hover { background: #161b25; }
+
+        .path-header {
+            font-weight: 600;
+            font-size: 13px;
+            color: #cfd8e3;
+            margin-bottom: 10px;
+            text-align: left;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1e2430;
+        }
+
+        .path-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .path-step {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .path-step:hover {
+            background: #141820;
+            border-color: #2b3342;
+        }
+
+        .path-step:before {
+            content: attr(data-step);
+            background: #1a73e8;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .thinking-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .response-with-path {
+            background: #12161f;
+            border-left: 4px solid #1a73e8;
+            margin-bottom: 15px;
+        }
+
+        .path-info {
+            font-size: 12px;
+            color: #17a2b8;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(23, 162, 184, 0.1);
+            border-radius: 6px;
+        }
+
+        .response-content {
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .response-content strong,
+        .response-content b {
+            color: #eaeef2;
+            font-weight: 600;
+        }
+
+        .response-content h3 {
+            color: #eaeef2;
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #3498db;
+            font-weight: 600;
+        }
+
+        .response-content h4 {
+            color: #eaeef2;
+            font-size: 15px;
+            margin: 14px 0 8px 0;
+            font-weight: 600;
+        }
+
+        .response-content p {
+            margin: 10px 0;
+            color: #cfd8e3;
+        }
+
+        .response-content ul {
+            margin: 8px 0 12px 20px;
+            color: #cfd8e3;
+        }
+
+        .response-content li {
+            margin: 4px 0;
+            line-height: 1.6;
+        }
+
+        .thinking-step {
+            background: #161a22;
+            border-left: 4px solid #17a2b8;
+            padding: 15px 18px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .thinking-step h4 {
+            color: #17a2b8 !important;
+            margin-top: 0 !important;
+            margin-bottom: 10px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+
+        .auto-updating {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #856404;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .step-executed {
+            background: #d4edda !important;
+            border-color: #c3e6cb !important;
+        }
+
+        .step-executed:before {
+            background: #28a745 !important;
+        }
+
+        .composer {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            padding: 12px 16px;
+            background: linear-gradient(to top, #0f1115 70%, rgba(15,17,21,0.7) 100%);
+            border-top: 1px solid #1e2430;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1px solid #1e2430;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            color: #eaeef2;
+            background: #12161f;
+            resize: none;
+        }
+        .chat-input:focus { border-color: #1a73e8; }
+        .send-btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.2s ease;
+        }
+        .send-btn:hover { background: #1669cf; }
+        .send-btn:disabled { background: #3a4557; cursor: not-allowed; }
+
+        .category-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .actions-section {
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 8px;
+            right: 20px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            background: #12161f;
+            border: 1px solid #1e2430;
+            z-index: 3;
+        }
+        .main-header { position: relative; z-index: 2; }
+
+        .status-connected {
+            color: #28a745;
+        }
+
+        .status-disconnected {
+            color: #dc3545;
+        }
+
+        /* Scroll-to-bottom buttons */
+        .scroll-btn {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            border: 1px solid #1e2430;
+            background: #161a22;
+            color: #cfd8e3;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 5;
+        }
+        .scroll-btn.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Collapsible approach headers */
+        .path-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .path-title { font-weight: 600; font-size: 13px; color: #cfd8e3; }
+        .path-arrow { color: #9aa4b2; transition: transform 0.15s ease; }
+        .thinking-path.collapsed .path-content { display: none; }
+        .thinking-path .path-arrow { transform: rotate(0deg); }
+        .thinking-path.expanded .path-arrow { transform: rotate(90deg); }
+        .path-question {
+            margin: 8px 0 10px 0;
+            padding: 8px 10px;
+            background: #0f1115;
+            border: 1px solid #1e2430;
+            border-radius: 8px;
+            color: #cfd8e3;
+            font-size: 12px;
+        }
+
+        /* CSV insights panel (kept, but no big result box) */
+        .csv-panel {
+            padding: 10px 16px 12px 16px;
+            background: #0c0e12;
+            border-top: 1px solid #1e2430;
+            border-bottom: 1px solid #1e2430;
+        }
+        .csv-panel-header {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #cfd8e3;
+        }
+        .csv-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .csv-controls input[type="file"] {
+            font-size: 12px;
+            max-width: 260px;
+        }
+        .csv-controls button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .csv-controls button:disabled {
+            background: #3a4557;
+            cursor: not-allowed;
+        }
+        .csv-hint {
+            font-size: 11px;
+            color: #9aa4b2;
+        }
+
+        @media (max-width: 1000px) {
+            .chat-container { grid-template-columns: 1fr; }
+            .thinking-panel { display: none; }
+        }
+        @media (max-width: 800px) {
+            .sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn btn-close" onclick="closeWindow()" title="Close"></button>
+            <button class="window-btn btn-minimize" onclick="minimizeWindow()" title="Minimize"></button>
+            <button class="window-btn btn-maximize" onclick="toggleMaximize()" title="Maximize"></button>
+        </div>
+        <div class="title-text">
+            StratifyAI - Strategic Thinking Assistant
+        </div>
+        <div style="width: 70px;"></div>
+    </div>
+    
+    <div class="status-indicator" id="status">
+        <span class="status-disconnected">● Connecting...</span>
+    </div>
+
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">StratifyAI <button class="sidebar-min-btn" id="sidebarMinBtn" title="Minimize sidebar">◀</button></div>
+            <button class="new-chat" id="newChatBtn">+ New Chat</button>
+            <div class="list" id="conversationList"></div>
+        </aside>
+        <div class="main">
+            <div class="main-header">
+                <div class="header-title">Chat</div>
+                <div class="header-actions">
+                    <button class="header-btn" id="sidebarToggleBtn">Hide Sidebar</button>
+                    <button class="header-btn" id="toggleApproachesBtn">Approaches</button>
+                </div>
+            </div>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        🧠 Hello! I'm StratifyAI, your strategic thinking assistant. Ask me any question and I'll generate different thinking approaches for you to explore step-by-step.
+                    </div>
+                    <button class="scroll-btn" id="chatScrollBtn" title="Scroll to latest">↓</button>
+                </div>
+                <div class="thinking-panel" id="thinkingPanel">
+                    <div class="panel-header">Thinking Approaches</div>
+                    <div class="thinking-paths" id="thinkingPaths">
+                        <div class="thinking-indicator">Ask me a question and I'll show you different thinking approaches...</div>
+                    </div>
+                    <button class="scroll-btn" id="approachScrollBtn" title="Scroll approaches">↓</button>
+                </div>
+            </div>
+
+            <!-- CSV panel (kept, but analysis goes to chat) -->
+            <div class="csv-panel">
+                <div class="csv-panel-header">📊 Upload CSV for insights</div>
+                <div class="csv-controls">
+                    <input type="file" id="csvFileInput" accept=".csv" />
+                    <button id="analyzeCsvBtn">Analyze CSV</button>
+                    <span class="csv-hint">
+                        Small files only (e.g., ≤ 200 rows / ≤ 200 KB). Analysis appears as a chat response and stays in context.
+                    </span>
+                </div>
+            </div>
+
+            <div class="composer">
+                <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1" onkeypress="handleKeyPress(event)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Safe Electron detection
+        let ipcRenderer = null;
+        try {
+            if (typeof require === 'function') {
+                const electron = require('electron');
+                ipcRenderer = electron?.ipcRenderer || null;
+            }
+        } catch (e) {
+            ipcRenderer = null;
+        }
+        
+        let isConnected = false;
+        let isLoading = false;
+        let isElectron = !!ipcRenderer;
+
+        // CSV context so follow-up questions know about the dataset
+        let lastCsvSnippet = '';
+        let lastCsvSummary = '';
+
+        // Sidebar conversations
+        let conversations = [];
+        let activeConversationId = null;
+
+        function loadConversations() {
+            try {
+                const raw = localStorage.getItem('stratify_conversations');
+                conversations = raw ? JSON.parse(raw) : [];
+            } catch (e) { conversations = []; }
+        }
+        function saveConversations() {
+            localStorage.setItem('stratify_conversations', JSON.stringify(conversations));
+        }
+        function renderConversationList() {
+            const listEl = document.getElementById('conversationList');
+            listEl.innerHTML = conversations.map(c => `
+                <div class="conv-item" onclick="selectConversation('${c.id}')">${c.title || 'Untitled'}</div>
+            `).join('');
+        }
+        // Ensure we have an active conversation without clearing existing messages
+        function ensureConversation() {
+            if (!activeConversationId) {
+                const id = Date.now().toString();
+                const conv = { id, title: 'New Chat', createdAt: Date.now() };
+                conversations.unshift(conv);
+                activeConversationId = id;
+                saveConversations();
+                renderConversationList();
+            }
+        }
+        function createNewConversation() {
+            const id = Date.now().toString();
+            const conv = { id, title: 'New Chat', createdAt: Date.now() };
+            conversations.unshift(conv);
+            activeConversationId = id;
+            saveConversations();
+            renderConversationList();
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `<div class="message bot-message">🧠 New chat started. Ask me anything!</div>`;
+            hideThinkingPaths();
+            // Reset CSV context for new chat
+            lastCsvSnippet = '';
+            lastCsvSummary = '';
+        }
+        function selectConversation(id) {
+            activeConversationId = id;
+            addMessage(`Switched to conversation`, false);
+        }
+
+        checkGroqConnection();
+
+        async function checkGroqConnection() {
+            if (!isElectron) {
+                isConnected = false;
+                updateStatus();
+                return;
+            }
+            try {
+                const result = await ipcRenderer.invoke('send-to-llm', 'test');
+                isConnected = !!result.success;
+                updateStatus();
+            } catch (error) {
+                isConnected = false;
+                updateStatus();
+            }
+        }
+
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            if (isElectron) {
+                if (isConnected) {
+                    statusEl.innerHTML = '<span class="status-connected">● Connected</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="status-disconnected">● Disconnected</span>';
+                }
+            } else {
+                statusEl.innerHTML = '<span class="status-disconnected">● Browser Preview</span>';
+            }
+        }
+
+        function addMessage(content, isUser = false, isLoadingMessage = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            
+            let className = 'message ';
+            if (isUser) className += 'user-message';
+            else if (isLoadingMessage) className += 'loading';
+            else className += 'bot-message';
+            
+            messageEl.className = className;
+            messageEl.textContent = content;
+            
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            updateScrollButtons();
+            
+            return messageEl;
+        }
+
+        function addMarkdownBotMessage(markdown, prefixInfoHtml = '') {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = prefixInfoHtml ? 'message bot-message response-with-path' : 'message bot-message';
+
+            const html = markdownToHtml(markdown);
+            if (prefixInfoHtml) {
+                messageEl.innerHTML = `
+                    <div class="path-info">${prefixInfoHtml}</div>
+                    <div class="response-content">${html}</div>
+                `;
+            } else {
+                messageEl.innerHTML = `<div class="response-content">${html}</div>`;
+            }
+
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            updateScrollButtons();
+            return messageEl;
+        }
+
+        function markdownToHtml(md) {
+            let html = md;
+
+            // Headings
+            html = html.replace(/^### (.*)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^## (.*)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^# (.*)$/gm, '<h3>$1</h3>');
+
+            // Bold & italics
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Bullet lists
+            html = html.replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+            html = html.replace(/<\/ul>\s*<ul>/g, '');
+
+            // Numbered lists
+            html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+            html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g, '');
+
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+
+            if (!html.includes('<p') && !html.includes('<ul') && !html.includes('<h3') && !html.includes('<div')) {
+                html = `<p>${html}</p>`;
+            }
+
+            return html;
+        }
+
+        let currentQuery = '';
+        let currentPaths = [];
+        let conversationContext = [];
+        let lastBotResponse = '';
+
+        async function closeWindow() {
+            if (!ipcRenderer) return;
+            await ipcRenderer.invoke('window-close');
+        }
+
+        async function minimizeWindow() {
+            if (!ipcRenderer) return;
+            await ipcRenderer.invoke('window-minimize');
+        }
+
+        async function toggleMaximize() {
+            if (!ipcRenderer) return;
+            await ipcRenderer.invoke('window-maximize');
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+            
+            const input = document.getElementById('chatInput');
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+
+            // Shown to user in thinking panel
+            currentQuery = userMessage;
+
+            // Build llmQuery (attach CSV context if present)
+            let llmQuery = userMessage;
+            if (lastCsvSnippet) {
+                llmQuery =
+`The user previously uploaded the following small CSV (truncated):
+
+${lastCsvSnippet}
+
+You already generated this summary for them:
+
+${lastCsvSummary}
+
+Now the user asks:
+
+${userMessage}
+
+Answer and reason using the dataset context above.`;
+            }
+
+            if (!activeConversationId) {
+                ensureConversation();
+            }
+            const idx = conversations.findIndex(c => c.id === activeConversationId);
+            if (idx >= 0 && (!conversations[idx].title || conversations[idx].title === 'New Chat')) {
+                conversations[idx].title = userMessage.length > 40 ? (userMessage.slice(0, 40) + '…') : userMessage;
+                saveConversations();
+                renderConversationList();
+            }
+            
+            addMessage(userMessage, true);
+            input.value = '';
+            
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            showThinkingIndicator('Analyzing your question and generating thinking approaches...');
+            
+            try {
+                if (isElectron && ipcRenderer) {
+                    const pathsResult = await ipcRenderer.invoke('generate-thinking-paths', llmQuery);
+                    if (pathsResult.success && pathsResult.paths.length > 0) {
+                        currentPaths = pathsResult.paths;
+                        displayThinkingPaths(pathsResult.paths, false);
+                        isConnected = true;
+                    } else {
+                        addMessage(`Error generating thinking paths: ${pathsResult.error || 'Unknown error'}`, false);
+                        hideThinkingPaths();
+                        isConnected = false;
+                    }
+                } else {
+                    const pathsResult = generateLocalPaths(userMessage);
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, false);
+                }
+            } catch (error) {
+                addMessage(`Connection error: ${error.message}`, false);
+                hideThinkingPaths();
+                isConnected = false;
+            }
+            
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            updateStatus();
+        }
+
+        function showThinkingIndicator(message) {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            thinkingPathsEl.innerHTML = `
+                <div class="thinking-indicator">${message}</div>
+            `;
+        }
+
+        function displayThinkingPaths(paths, showUpdateButton = false, isAutoUpdate = false) {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            
+            let pathsHTML = `
+                <div class="thinking-indicator">Choose a thinking approach and step:</div>
+            `;
+            
+            if (isAutoUpdate) {
+                pathsHTML += `
+                    <div class="auto-updating">
+                        🔄 Approaches automatically updated based on conversation
+                    </div>
+                `;
+            }
+            
+            if (showUpdateButton) {
+                pathsHTML += `
+                    <button class="update-paths-btn" id="updatePathsBtn" onclick="updateThinkingPaths()">
+                        🔄 Generate New Approaches Based on Conversation
+                    </button>
+                `;
+            }
+            
+            pathsHTML += '<div class="paths-grid">';
+            
+            paths.forEach((path, pathIndex) => {
+                const questionText = currentQuery ? `❓ ${currentQuery}` : '❓ Your question will appear here';
+                pathsHTML += `
+                    <div class="thinking-path collapsed" data-path-index="${pathIndex}">
+                        <div class="path-header path-header-row" onclick="togglePathCollapse(${pathIndex})">
+                            <span class="path-title">${path.name}</span>
+                            <span class="path-arrow">▸</span>
+                        </div>
+                        <div class="path-content">
+                            <div class="path-question">${questionText}</div>
+                            <ul class="path-steps">
+                `;
+                
+                path.steps.forEach((step, stepIndex) => {
+                    pathsHTML += `
+                        <li class="path-step" data-step="${stepIndex + 1}">
+                            <label>
+                                <input type="checkbox" class="step-select" data-path-index="${pathIndex}" data-step="${stepIndex + 1}">
+                                ${step}
+                            </label>
+                            <button class="step-run-btn" onclick="executeThinkingPath(${pathIndex}, ${stepIndex + 1})" title="Run up to this step">▶</button>
+                        </li>
+                    `;
+                });
+                
+                pathsHTML += `</ul>
+                    <div class="path-actions">
+                        <button class="run-selected-btn" onclick="executeSelectedSteps(${pathIndex})">Run Selected Steps</button>
+                    </div>
+                </div></div>`;
+            });
+            
+            pathsHTML += `</div>`;
+            thinkingPathsEl.innerHTML = pathsHTML;
+            updateScrollButtons();
+        }
+
+        async function autoUpdateThinkingPaths(pathName, stepsExecuted) {
+            try {
+                if (!ipcRenderer) return;
+                const pathsResult = await ipcRenderer.invoke('generate-updated-paths', {
+                    originalQuery: currentQuery,
+                    lastResponse: lastBotResponse,
+                    conversationContext: conversationContext,
+                    lastPathName: pathName,
+                    lastStepsExecuted: stepsExecuted
+                });
+                
+                if (pathsResult.success && pathsResult.paths.length > 0) {
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, true, true);
+                }
+            } catch (error) {
+                console.error('Error auto-updating paths:', error);
+            }
+        }
+
+        async function executeThinkingPath(pathIndex, stepNumber) {
+            if (isLoading) return;
+            
+            const path = currentPaths[pathIndex];
+            if (!path) return;
+            
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            highlightExecutedSteps(pathIndex, stepNumber);
+            const loadingEl = addMessage(`Following "${path.name}" approach through step ${stepNumber}...`, false, true);
+            
+            try {
+                if (isElectron && ipcRenderer) {
+                    const result = await ipcRenderer.invoke('execute-thinking-path', {
+                        query: currentQuery,
+                        pathName: path.name,
+                        steps: path.steps,
+                        executeUpToStep: stepNumber
+                    });
+                    
+                    loadingEl.remove();
+                    
+                    if (result.success) {
+                        lastBotResponse = result.response;
+                        conversationContext.push({
+                            query: currentQuery,
+                            pathName: result.pathName,
+                            stepsExecuted: result.stepsExecuted,
+                            response: result.response
+                        });
+                        addMessageWithPath(result.response, result.pathName, result.stepsExecuted);
+                        setTimeout(() => { autoUpdateThinkingPaths(result.pathName, result.stepsExecuted); }, 800);
+                        isConnected = true;
+                    } else {
+                        addMessage(`Error: ${result.error}`, false);
+                        isConnected = false;
+                    }
+                } else {
+                    const simulated = simulateLocalResponse(path.name, path.steps, stepNumber);
+                    loadingEl.remove();
+                    lastBotResponse = simulated;
+                    addMessageWithPath(simulated, path.name, stepNumber);
+                }
+            } catch (error) {
+                loadingEl.remove();
+                addMessage(`Connection error: ${error.message}`, false);
+                isConnected = false;
+            }
+            
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            updateStatus();
+        }
+
+        function highlightExecutedSteps(pathIndex, stepNumber) {
+            document.querySelectorAll('.path-step').forEach(step => {
+                step.classList.remove('step-executed');
+            });
+            
+            const pathElement = document.querySelectorAll('.thinking-path')[pathIndex];
+            const steps = pathElement.querySelectorAll('.path-step');
+            
+            for (let i = 0; i < stepNumber; i++) {
+                if (steps[i]) {
+                    steps[i].classList.add('step-executed');
+                }
+            }
+        }
+
+        function highlightSelectedSteps(pathIndex, selectedSteps) {
+            document.querySelectorAll('.path-step').forEach(step => {
+                step.classList.remove('step-executed');
+            });
+            const pathElement = document.querySelectorAll('.thinking-path')[pathIndex];
+            const steps = pathElement.querySelectorAll('.path-step');
+            selectedSteps.forEach(n => {
+                const el = Array.from(steps).find(s => s.getAttribute('data-step') === String(n));
+                if (el) el.classList.add('step-executed');
+            });
+        }
+
+        function addMessageWithPath(content, pathName, stepsExecuted) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            const formattedContent = formatThinkingResponse(content);
+            
+            messageEl.className = 'message bot-message response-with-path';
+            messageEl.innerHTML = `
+                <div class="path-info">
+                    🧠 Following "${pathName}" approach - Steps 1-${stepsExecuted} executed
+                </div>
+                <div class="response-content">${formattedContent}</div>
+            `;
+            
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return messageEl;
+        }
+
+        function addMessageWithSelectedSteps(content, pathName, selectedSteps) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            const formattedContent = formatThinkingResponse(content);
+            const stepsList = selectedSteps.join(', ');
+            
+            messageEl.className = 'message bot-message response-with-path';
+            messageEl.innerHTML = `
+                <div class="path-info">
+                    🧠 Following "${pathName}" approach - Steps ${stepsList} executed
+                </div>
+                <div class="response-content">${formattedContent}</div>
+            `;
+            
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return messageEl;
+        }
+
+        function formatThinkingResponse(content) {
+            let formatted = content;
+
+            formatted = formatted.replace(/\*\*Step (\d+):(.*?)\*\*/g, '<div class="thinking-step"><h4>🔹 Step $1:$2</h4>');
+            formatted = formatted.replace(/Step (\d+):(.*?)(?=\n|Step|\*\*|$)/g, '<div class="thinking-step"><h4>🔹 Step $1:$2</h4>');
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/^[•*]\s+(.+)$/gm, '<li>$1</li>');
+            formatted = formatted.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+            formatted = formatted.replace(/<\/ul>\s*<ul>/g, '');
+            formatted = formatted.replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+            formatted = formatted.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g, '');
+            formatted = formatted.replace(/\*\*Summary:\*\*/g, '</div><h3>📋 Summary:</h3>');
+            formatted = formatted.replace(/Summary:/g, '</div><h3>📋 Summary:</h3>');
+            formatted = formatted.replace(/\*\*Following "(.*?)" Approach:\*\*/g, '<h3>🎯 Following "$1" Approach:</h3>');
+            formatted = formatted.replace(/\*\*([A-Z][a-z]+ Scenario[^*]*)\*\*/g, '<h4><strong>$1</strong></h4>');
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            if (formatted.includes('<div class="thinking-step">') && !formatted.endsWith('</div>')) {
+                formatted += '</div>';
+            }
+            formatted = formatted.replace(/\n\n/g, '</p><p>');
+            formatted = formatted.replace(/\n/g, '<br>');
+            if (!formatted.includes('<p>') && !formatted.includes('<div>') && !formatted.includes('<h3>')) {
+                formatted = '<p>' + formatted + '</p>';
+            }
+            return formatted;
+        }
+
+        async function updateThinkingPaths() {
+            if (isLoading || !ipcRenderer) return;
+            
+            isLoading = true;
+            const btn = document.getElementById('updatePathsBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '🔄 Generating...';
+            }
+            
+            try {
+                const last = conversationContext[conversationContext.length - 1] || {};
+                const pathsResult = await ipcRenderer.invoke('generate-updated-paths', {
+                    originalQuery: currentQuery,
+                    lastResponse: lastBotResponse,
+                    conversationContext: conversationContext,
+                    lastPathName: last.pathName || '',
+                    lastStepsExecuted: last.stepsExecuted || 1
+                });
+                
+                if (pathsResult.success && pathsResult.paths.length > 0) {
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, true, false);
+                } else {
+                    console.error('Failed to generate updated paths:', pathsResult.error);
+                }
+            } catch (error) {
+                console.error('Error updating paths:', error);
+            }
+            
+            isLoading = false;
+        }
+
+        async function executeSelectedSteps(pathIndex) {
+            if (isLoading) return;
+            const path = currentPaths[pathIndex];
+            if (!path) return;
+
+            const pathElement = document.querySelectorAll('.thinking-path')[pathIndex];
+            const checked = Array.from(pathElement.querySelectorAll('.step-select:checked'));
+            const selectedNumbers = checked.map(c => parseInt(c.getAttribute('data-step'), 10)).sort((a,b) => a-b);
+            if (selectedNumbers.length === 0) {
+                addMessage('Please select at least one step to run.', false);
+                return;
+            }
+
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+
+            highlightSelectedSteps(pathIndex, selectedNumbers);
+            const loadingEl = addMessage(`Following "${path.name}" approach with selected steps (${selectedNumbers.join(', ')})...`, false, true);
+
+            try {
+                if (isElectron && ipcRenderer) {
+                    const result = await ipcRenderer.invoke('execute-thinking-steps', {
+                        query: currentQuery,
+                        pathName: path.name,
+                        steps: path.steps,
+                        selectedSteps: selectedNumbers
+                    });
+
+                    loadingEl.remove();
+
+                    if (result.success) {
+                        lastBotResponse = result.response;
+                        conversationContext.push({
+                            query: currentQuery,
+                            pathName: result.pathName,
+                            stepsExecuted: selectedNumbers.length,
+                            selectedSteps: selectedNumbers,
+                            response: result.response
+                        });
+                        addMessageWithSelectedSteps(result.response, result.pathName, selectedNumbers);
+                        setTimeout(() => { autoUpdateThinkingPaths(result.pathName, selectedNumbers.length); }, 800);
+                        isConnected = true;
+                    } else {
+                        addMessage(`Error: ${result.error}`, false);
+                        isConnected = false;
+                    }
+                } else {
+                    // Local simulation: concatenate selected steps
+                    const simulated = simulateLocalResponse(path.name, path.steps, selectedNumbers[selectedNumbers.length - 1]);
+                    loadingEl.remove();
+                    lastBotResponse = simulated;
+                    addMessageWithSelectedSteps(simulated, path.name, selectedNumbers);
+                }
+            } catch (error) {
+                loadingEl.remove();
+                addMessage(`Connection error: ${error.message}`, false);
+                isConnected = false;
+            }
+            
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            updateStatus();
+        }
+
+        function hideThinkingPaths() {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            thinkingPathsEl.innerHTML = `
+                <div class="thinking-indicator">Ask me a question and I'll show you different thinking approaches...</div>
+            `;
+        }
+
+        function togglePathCollapse(pathIndex) {
+            const pathEls = document.querySelectorAll('.thinking-path');
+            const el = pathEls[pathIndex];
+            if (!el) return;
+            const arrow = el.querySelector('.path-arrow');
+            const isCollapsed = el.classList.contains('collapsed');
+            el.classList.toggle('collapsed', !isCollapsed);
+            el.classList.toggle('expanded', isCollapsed);
+            if (arrow) arrow.textContent = isCollapsed ? '▾' : '▸';
+        }
+
+        function isNearBottom(el) {
+            if (!el) return true;
+            return (el.scrollHeight - el.scrollTop - el.clientHeight) < 40;
+        }
+        function updateScrollButtons() {
+            const chatEl = document.getElementById('chatMessages');
+            const chatBtn = document.getElementById('chatScrollBtn');
+            const panelEl = document.getElementById('thinkingPanel');
+            const approachBtn = document.getElementById('approachScrollBtn');
+            if (chatEl && chatBtn) {
+                const showChat = !isNearBottom(chatEl) && chatEl.scrollHeight > chatEl.clientHeight + 20;
+                chatBtn.classList.toggle('show', showChat);
+            }
+            if (panelEl && approachBtn) {
+                const showApproach = !isNearBottom(panelEl) && panelEl.scrollHeight > panelEl.clientHeight + 20;
+                approachBtn.classList.toggle('show', showApproach);
+            }
+        }
+        function scrollChatToBottom() {
+            const chatEl = document.getElementById('chatMessages');
+            if (!chatEl) return;
+            chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
+        }
+        function scrollApproachesToBottom() {
+            const panelEl = document.getElementById('thinkingPanel');
+            if (!panelEl) return;
+            panelEl.scrollTo({ top: panelEl.scrollHeight, behavior: 'smooth' });
+        }
+
+        function sendQuickMessage(message) {
+            document.getElementById('chatInput').value = message;
+            sendMessage();
+        }
+
+        function toggleSidebar(forceCollapse) {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            const collapse = (typeof forceCollapse === 'boolean') ? forceCollapse : !isCollapsed;
+            sidebar.classList.toggle('collapsed', collapse);
+            const btn = document.getElementById('sidebarToggleBtn');
+            if (btn) btn.textContent = collapse ? 'Show Sidebar' : 'Hide Sidebar';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // CSV analysis wiring
+        function setupCsvPanel() {
+            const csvInput = document.getElementById('csvFileInput');
+            const analyzeBtn = document.getElementById('analyzeCsvBtn');
+            if (!csvInput || !analyzeBtn) return;
+
+            if (!isElectron || !ipcRenderer) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.textContent = 'Desktop only';
+                return;
+            }
+
+            analyzeBtn.addEventListener('click', async () => {
+                const file = csvInput.files[0];
+                if (!file) {
+                    addMessage('Please choose a CSV file first.', false);
+                    return;
+                }
+                if (file.size > 200 * 1024) {
+                    addMessage('File too large for this MVP. Please use a smaller CSV (≤ 200 KB).', false);
+                    return;
+                }
+
+                analyzeBtn.disabled = true;
+                const originalText = analyzeBtn.textContent;
+                analyzeBtn.textContent = 'Analyzing CSV...';
+
+                try {
+                    const text = await file.text();
+                    const MAX_CHARS = 8000;
+                    lastCsvSnippet = text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) : text;
+
+                    const result = await ipcRenderer.invoke('analyze-csv', {
+                        fileName: file.name,
+                        csvText: text
+                    });
+
+                    if (result && result.success) {
+                        // Bind analysis to the current conversation without starting a new chat
+                        ensureConversation();
+                        lastCsvSummary = result.text || '';
+                        addMarkdownBotMessage(
+                            result.text || 'No analysis returned from the model.',
+                            `📊 CSV analysis completed for <strong>${file.name}</strong>. You can now ask follow-up questions like the ones listed below.`
+                        );
+                    } else {
+                        addMessage(result?.error || 'No analysis returned from the model.', false);
+                    }
+                } catch (err) {
+                    addMessage('Error reading or analyzing CSV: ' + err.message, false);
+                } finally {
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = originalText;
+                }
+            });
+        }
+
+        // Initial setup
+        window.addEventListener('load', () => {
+            document.getElementById('chatInput').focus();
+            loadConversations();
+            renderConversationList();
+            document.getElementById('newChatBtn').addEventListener('click', createNewConversation);
+            const minBtn = document.getElementById('sidebarMinBtn');
+            if (minBtn) minBtn.addEventListener('click', () => toggleSidebar(true));
+            const toggleBtn = document.getElementById('sidebarToggleBtn');
+            if (toggleBtn) toggleBtn.addEventListener('click', () => toggleSidebar());
+            document.getElementById('toggleApproachesBtn').addEventListener('click', () => {
+                const panel = document.getElementById('thinkingPanel');
+                panel.classList.toggle('hidden');
+            });
+            const chatEl = document.getElementById('chatMessages');
+            const panelEl = document.getElementById('thinkingPanel');
+            if (chatEl) chatEl.addEventListener('scroll', updateScrollButtons);
+            if (panelEl) panelEl.addEventListener('scroll', updateScrollButtons);
+            const chatBtn = document.getElementById('chatScrollBtn');
+            const approachBtn = document.getElementById('approachScrollBtn');
+            if (chatBtn) chatBtn.addEventListener('click', scrollChatToBottom);
+            if (approachBtn) approachBtn.addEventListener('click', scrollApproachesToBottom);
+            updateScrollButtons();
+
+            setupCsvPanel();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'w') {
+                event.preventDefault();
+                closeWindow();
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key === 'm') {
+                event.preventDefault();
+                minimizeWindow();
+            }
+            if (event.key === 'F11') {
+                event.preventDefault();
+                toggleMaximize();
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key === 'r' && document.getElementById('updatePathsBtn')) {
+                event.preventDefault();
+                updateThinkingPaths();
+            }
+        });
+
+        // Local preview helpers
+        function generateLocalPaths(query) {
+            return {
+                paths: [
+                    { name: 'Analytical', steps: ['Break down the problem', 'Evaluate components', 'Synthesize insights'] },
+                    { name: 'Creative', steps: ['Brainstorm ideas', 'Explore alternatives', 'Refine top concepts'] },
+                    { name: 'Practical', steps: ['Assess constraints', 'Plan implementation', 'Define actions'] },
+                    { name: 'Strategic', steps: ['Clarify objectives', 'Map options', 'Recommend approach'] }
+                ]
+            };
+        }
+        function simulateLocalResponse(pathName, steps, stepNumber) {
+            let out = `**Following "${pathName}" Approach:**\n\n`;
+            for (let i = 0; i < stepNumber; i++) {
+                out += `**Step ${i+1}: ${steps[i]}**\n• Key points for this step.\n• Example considerations.\n\n`;
+            }
+            out += `**Current Progress:**\n• Executed ${stepNumber} step(s).\n• Next: continue remaining steps.`;
+            return out;
+        }
+    </script>
+</body>
+</html>
