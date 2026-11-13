@@ -1,0 +1,201 @@
+label,text
+coding,Why does my React component re-render infinitely when I call setState inside useEffect?
+coding,How do I fix a NullPointerException in my Java Spring Boot controller?
+coding,What is the best way to structure a Node.js Express REST API project?
+coding,My Python script throws KeyError when reading a dictionary from JSON. How do I debug it?
+coding,How can I optimize a slow SQL query with multiple joins?
+coding,Explain how to implement JWT authentication in a Flask backend
+coding,How do I write unit tests for an async function in TypeScript with Jest?
+coding,Why is my Docker container exiting immediately after starting?
+coding,How should I refactor a 2000-line class into smaller modules?
+coding,What's causing a CORS error when my frontend calls my API?
+coding,How do I reverse a linked list in C++ without extra memory?
+coding,My Git merge has conflicts in package-lock.json. What should I do?
+coding,How can I reduce the bundle size of my Vite React app?
+coding,Implement a debounce function in JavaScript
+coding,Why does my recursive Fibonacci function in Python run so slowly?
+coding,How do I connect MongoDB to my Node application using Mongoose?
+coding,What design pattern should I use for a plugin system in Java?
+coding,My Android app crashes on screen rotation. How do I preserve state?
+coding,How do I handle race conditions when two users update the same row?
+coding,Write a regex to validate an email address and explain it
+coding,How can I migrate my JavaScript codebase to TypeScript gradually?
+coding,Why does my CSS flexbox layout overflow on mobile screens?
+coding,How do I deploy a FastAPI app with Docker and Nginx?
+coding,What is the difference between a process and a thread when writing concurrent code in Go?
+coding,How do I set up CI with GitHub Actions to run my pytest suite?
+data_analysis,What insights can I get from my monthly sales dataset?
+data_analysis,How do I detect outliers in a dataset with thousands of transactions?
+data_analysis,Which chart should I use to compare revenue across regions over time?
+data_analysis,How do I handle missing values in my survey data before analysis?
+data_analysis,Is there a correlation between study hours and exam scores in this data?
+data_analysis,How do I segment customers based on purchase behaviour?
+data_analysis,What statistical test should I use to compare two groups' average spending?
+data_analysis,How can I forecast next quarter's demand from historical sales?
+data_analysis,Analyse the churn rate trend in my subscription data
+data_analysis,How do I calculate customer lifetime value from order history?
+data_analysis,What does a p-value of 0.03 mean in my A/B test results?
+data_analysis,How should I clean and normalise a messy Excel sheet of product data?
+data_analysis,Which features matter most for predicting house prices in my dataset?
+data_analysis,How do I build a dashboard of KPIs from my website analytics?
+data_analysis,Why did our conversion rate drop last month according to the funnel data?
+data_analysis,How do I perform exploratory data analysis on a new CSV file?
+data_analysis,Interpret this regression output with R-squared 0.62
+data_analysis,How can I visualise the distribution of delivery times?
+data_analysis,What metrics should I track to measure app user engagement?
+data_analysis,How do I compare year-over-year growth for each product category?
+data_analysis,Find seasonal patterns in electricity consumption data
+data_analysis,How do I check if my dataset is imbalanced for classification?
+data_analysis,What is the median versus mean income telling me in this census data?
+data_analysis,How do I aggregate daily stock prices into weekly averages with pandas?
+data_analysis,Which cohort of users retained best after 90 days?
+business_strategy,How can a small café increase revenue within six months?
+business_strategy,What go-to-market strategy should my SaaS startup use?
+business_strategy,How do I price a new subscription product against competitors?
+business_strategy,Should we expand our e-commerce store to international markets?
+business_strategy,How can a local gym compete with large fitness chains?
+business_strategy,What is a good customer acquisition strategy for a B2B software company?
+business_strategy,How do I build a competitive moat for my food delivery startup?
+business_strategy,What marketing channels work best for a bootstrapped mobile app?
+business_strategy,How can we reduce customer churn in our subscription business?
+business_strategy,Create a growth plan for a handmade jewellery brand on Instagram
+business_strategy,How should a bookstore adapt to competition from online retailers?
+business_strategy,What business model fits an AI tutoring platform for students?
+business_strategy,How do I validate market demand before launching a product?
+business_strategy,How can our restaurant improve profit margins without raising prices?
+business_strategy,What partnerships would help a fintech startup gain trust?
+business_strategy,How should we position our brand against a cheaper competitor?
+business_strategy,How do I scale a freelance agency into a company with employees?
+business_strategy,What strategy should a family business use to go digital?
+business_strategy,How can a university club raise sponsorship money?
+business_strategy,What KPIs should a startup founder report to investors?
+business_strategy,How do we enter a market dominated by one big player?
+business_strategy,How can a clothing brand use sustainability as a competitive advantage?
+business_strategy,What is the best way to launch a product on Product Hunt?
+business_strategy,How can our startup reduce burn rate while still growing?
+business_strategy,Should our company focus on enterprise or small business customers?
+learning,What is machine learning in simple terms?
+learning,Explain how transformers work in natural language processing
+learning,How does the TCP three-way handshake work?
+learning,What is the difference between supervised and unsupervised learning?
+learning,Can you teach me the basics of blockchain?
+learning,How does compound interest work?
+learning,Explain recursion to a beginner with an example
+learning,What is quantum computing and why does it matter?
+learning,How do vaccines train the immune system?
+learning,Explain the concept of opportunity cost in economics
+learning,What are the SOLID principles in object-oriented programming?
+learning,How does gradient descent find the minimum of a function?
+learning,What is the difference between RAM and storage?
+learning,Help me understand Big O notation
+learning,What causes inflation and how is it measured?
+learning,How does photosynthesis convert light into energy?
+learning,What is the difference between HTTP and HTTPS?
+learning,Explain Bayes theorem with a simple example
+learning,How do neural networks learn from data?
+learning,What is the cloud and how does cloud computing work?
+learning,Explain the theory of relativity simply
+learning,How does a compiler differ from an interpreter?
+learning,What are embeddings in AI?
+learning,Teach me how public key cryptography works
+learning,What is the difference between a virus and bacteria?
+decision_making,Should I learn React or Angular for my final year project?
+decision_making,Is it better to do a master's degree or start working after graduation?
+decision_making,Should I accept a job offer with higher pay but a longer commute?
+decision_making,Which laptop should I buy for programming: MacBook or Windows?
+decision_making,Should our team use PostgreSQL or MongoDB for the new project?
+decision_making,Is it worth switching from Android to iOS development?
+decision_making,Should I rent or buy a house in the current market?
+decision_making,"Which cloud provider should a student startup choose: AWS, Azure or GCP?"
+decision_making,Should I study abroad or stay in my home country for my degree?
+decision_making,Is freelancing better than a full-time job for a fresh graduate?
+decision_making,Should I choose Python or Java as my first programming language?
+decision_making,Which offer should I take: a startup or a big tech company?
+decision_making,Should we build our own payment system or use Stripe?
+decision_making,Is it smarter to pay off my loan early or invest the money?
+decision_making,Should I specialise in data science or web development?
+decision_making,Which is better for our mobile app: Flutter or React Native?
+decision_making,Should I take a gap year before university?
+decision_making,Monolith versus microservices for a small team: which should we pick?
+decision_making,Should I buy a new car or a used one?
+decision_making,Is it worth doing an AWS certification as a student?
+decision_making,Should we hire a senior developer or two juniors?
+decision_making,Which should I prioritise: internships or personal projects?
+decision_making,Should I move to a new city for a better job?
+decision_making,Is it better to use a VPS or serverless for my side project?
+decision_making,Should I choose an electric scooter or public transport for commuting?
+creative,Give me ideas for a short story about time travel
+creative,Brainstorm names for a coffee shop with a space theme
+creative,Write a slogan for an eco-friendly water bottle brand
+creative,Suggest creative themes for our college tech fest
+creative,Help me design a logo concept for a fitness app
+creative,Come up with a plot twist for my mystery novel
+creative,What are some unique birthday party ideas for a ten year old?
+creative,Write a poem about the ocean at night
+creative,Brainstorm YouTube video ideas for a cooking channel
+creative,Design a fantasy world with its own magic system
+creative,Suggest a colour palette and mood for a meditation app
+creative,Give me ideas for a hackathon project that helps farmers
+creative,Create a catchy Instagram caption for a travel photo
+creative,Invent a board game that teaches kids about recycling
+creative,How can I make my product launch video more engaging?
+creative,Write a dialogue between a robot and a philosopher
+creative,Give me creative ways to decorate a small bedroom
+creative,Brainstorm a mascot character for a children's education app
+creative,Suggest an original concept for a mobile game
+creative,Write lyrics-style lines for a motivational song chorus
+creative,Help me come up with a name for my podcast about startups
+creative,Design an unusual escape room puzzle
+creative,Write a short bedtime story about a brave little turtle
+creative,Give me ideas for an art installation about climate change
+creative,Create a tagline for a student mental health campaign
+research,What does the current research say about remote work and productivity?
+research,Help me write a literature review on federated learning
+research,What are open research problems in explainable AI?
+research,Formulate a hypothesis about social media use and sleep quality
+research,How should I design a survey for my thesis on online learning?
+research,Summarise the evidence on intermittent fasting and weight loss
+research,What methodology should I use to study user trust in chatbots?
+research,Find gaps in existing studies on electric vehicle adoption in India
+research,How do I choose between qualitative and quantitative research methods?
+research,What are the main findings of studies on large language model hallucinations?
+research,Plan an experiment to test whether music improves concentration
+research,How do I evaluate the credibility of a scientific paper?
+research,What sources should I cite for a paper on renewable energy policy?
+research,Compare recent approaches to retrieval augmented generation
+research,How should I structure the methodology chapter of my dissertation?
+research,What research exists on gamification in education?
+research,Design a case study on the impact of UPI on small merchants
+research,What are the ethical considerations for research with human participants?
+research,How can I measure the reliability of my questionnaire?
+research,Summarise the state of the art in protein structure prediction
+research,What sample size do I need for my user study?
+research,How do I write a strong research question for my final year project?
+research,What do studies show about screen time and children's development?
+research,Review the literature on blockchain in supply chain management
+research,What datasets are commonly used for sentiment analysis research?
+personal_planning,Help me create a study plan for my final exams in four weeks
+personal_planning,How can I build a consistent morning routine?
+personal_planning,Plan my career path to become a machine learning engineer
+personal_planning,How do I prepare for campus placement interviews in three months?
+personal_planning,Create a monthly budget for a student living in a hostel
+personal_planning,How can I balance a part-time job with college studies?
+personal_planning,Make a workout plan for a beginner with 30 minutes a day
+personal_planning,How should I plan my week to stop procrastinating?
+personal_planning,Help me set goals for this semester
+personal_planning,How do I prepare for the GRE while studying full time?
+personal_planning,Plan a two week trip to Japan on a student budget
+personal_planning,How can I improve my sleep schedule?
+personal_planning,Create a roadmap to learn full stack development in six months
+personal_planning,How do I build a habit of reading every day?
+personal_planning,Plan how to save money for a new laptop in four months
+personal_planning,How should I organise my final year project timeline?
+personal_planning,Help me prepare a schedule for learning a new language
+personal_planning,What steps should I take to build my LinkedIn profile this month?
+personal_planning,How can I manage stress during exam season?
+personal_planning,Plan my transition from student to working professional
+personal_planning,Create a daily schedule for a productive work from home day
+personal_planning,How do I prepare for my first job interview next week?
+personal_planning,Help me plan a healthy diet on a tight budget
+personal_planning,How do I set up a system to track my personal goals?
+personal_planning,Make a plan to complete three online courses this summer

@@ -1,220 +1,137 @@
 # StratifyAI 🧠
-Strategic Thinking Assistant that puts you in control. Choose exactly which steps the AI executes across multiple thinking approaches, visualize progress, and fold CSV insights directly into the conversation — all in a fast, local desktop app.
 
-**Why it’s different**
-- Approach-first workflow with controllable steps (cumulative ▶ and multi-select) — you decide depth and direction.
-- Conversation-aware CSV analysis that stays in the same chat and powers follow-ups automatically.
-- Local-first desktop experience (Electron) for immediacy and privacy, instead of a generic web chatbot.
-- A first-of-its-kind combination of multi-approach thinking, precise step execution, and in-chat data context — built to reduce token waste and over-information.
+**An AI strategic-thinking assistant that lets you control *how* and *how far* the AI reasons.**
 
-## Highlights
+StratifyAI classifies your question with a trained ML model, designs four thinking paths from proven
+frameworks (First Principles, 5 Whys, SWOT, Six Thinking Hats…), recommends the best one, and lets you
+execute exactly the steps you need: cumulatively or any subset. Every answer becomes a node in a
+branching **Thinking Tree**, grounded in your own documents when you want, and every token is measured.
 
-- Guided thinking approaches generated for every question.
-- Run steps cumulatively (▶) or select any combination of steps (e.g., 1 and 3 only).
-- CSV analysis appears directly in chat and remains part of the same conversation.
-- Clean, professional UI with a sidebar of conversations and a dedicated thinking panel.
+Built with **React + TypeScript + Electron** and a **Python FastAPI** AI service, running entirely on
+**free** AI: Groq, Google Gemini and local Ollama models.
 
-## The Problem We Solve
+[![CI](https://github.com/DevPatel2020/StratifyAi/actions/workflows/ci.yml/badge.svg)](https://github.com/DevPatel2020/StratifyAi/actions/workflows/ci.yml)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-**Before StratifyAI:**
-- ❌ Token waste: AI generates full responses when you only need part of the analysis
-- ❌ Over-information: Getting overwhelmed with details you didn’t ask for
-- ❌ No control: Can’t pause AI mid-thought to explore different directions
-- ❌ Linear thinking: Stuck with one approach, can’t easily switch perspectives
-- ❌ High costs: Paying for tokens you don’t need or want
+---
 
-**With StratifyAI:**
-- ✅ Precision control: Get exactly the depth of analysis you need
-- ✅ Cost efficiency: Pay only for the thinking steps you choose
-- ✅ Strategic flexibility: Switch between different approaches dynamically
-- ✅ Incremental discovery: Build understanding step-by-step
-- ✅ Complete privacy: Everything runs locally on your machine
+## ✨ Features
 
-## 🚀 Key Features
+| | Feature | What makes it interesting |
+|---|---|---|
+| 🧭 | **Guided thinking paths** | 4 paths per question, each adapted from a framework that matches the question type; run steps cumulatively (▶) or tick any subset (e.g. steps 1 and 3) |
+| 🏷️ | **ML question classifier** | TF-IDF + Logistic Regression trained on 200 hand-written + 440 LLM-augmented questions (8 classes); falls back to LLM zero-shot, then keywords |
+| 🎯 | **Path recommender** | Hybrid ranking: embedding similarity (MiniLM) + a prior learned from which frameworks you run and like |
+| 🌳 | **Thinking Tree** | Tree-of-Thoughts style: branch from any answer, explore alternatives side by side (React Flow) |
+| 🧠 | **Conversation memory** | Recent messages on the active branch + an automatically maintained rolling summary |
+| 📄 | **Document RAG** | Upload PDF/TXT/MD; chunked, embedded locally, stored in ChromaDB; answers cite `[1]`, `[2]` with file and page |
+| 🛠️ | **Agent tools** | Function calling with web search, a safe calculator and document search (ReAct-style loop) |
+| 🔍 | **Self-critique** | A reviewer pass scores each answer (1–10) and rewrites it when the score is below 7 |
+| 🔀 | **Multi-provider routing** | Groq → Gemini → Ollama fallback on errors or rate limits, with streaming, a Stop button and token/latency logging |
+| ⚗️ | **Model Lab** | Same prompt on several models side by side, scored by an LLM judge |
+| 📊 | **Analytics & Evaluation** | Real token usage, latency and pipeline-stage costs; classifier metrics, confusion matrix, token-savings and RAG benchmarks |
+| 📈 | **CSV insights** | Deterministic column statistics + LLM insights; the dataset stays in context for follow-ups |
+| 🎙️ | **Voice input** | Speech-to-text with Groq Whisper |
+| ⌨️ | **Polish** | Ctrl+K command palette, Markdown/PDF export, dark/light theme, custom frameworks |
 
-- Multi-approach thinking: Analytical, creative, practical, and comprehensive angles per question
-- Step-wise execution: Run cumulatively (▶) or select any combination of steps
-- Conversation-aware context: Follow-ups refine approaches automatically
-- CSV insights: Upload a small CSV for quick analysis that stays in the chat
-- Professional formatting: Bold highlights, lists, and clear structure
+## 🏗️ Architecture
 
-## 📊 Cost Comparison
+```mermaid
+flowchart LR
+  UI[React renderer] <-->|typed IPC| MAIN[Electron main: StratifyEngine]
+  MAIN --> ROUTER[LLM router]
+  ROUTER --> GROQ[Groq gpt-oss-120b]
+  ROUTER --> GEM[Gemini 2.5 Flash-Lite]
+  ROUTER --> OLL[Ollama llama3.1 / llama3.2]
+  MAIN --> DB[(SQLite)]
+  MAIN <-->|HTTP| PY[FastAPI AI service]
+  PY --> CLF[Classifier]
+  PY --> VEC[ChromaDB RAG]
+  PY --> TOOLS[Web search · Calculator]
+```
 
-| Scenario              | Traditional Chat | StratifyAI | Savings |
-|-----------------------|------------------|------------|---------|
-| Quick clarification   | 500 tokens       | 150 tokens | 70%     |
-| Partial analysis      | 1200 tokens      | 400 tokens | 67%     |
-| Exploring options     | 2000 tokens      | 600 tokens | 70%     |
-| Complex strategy      | 3500 tokens      | 1000 tokens| 71%     |
+Details: [docs/architecture.md](docs/architecture.md) · Evaluation method: [docs/evaluation.md](docs/evaluation.md) ·
+Report outline: [docs/report-outline.md](docs/report-outline.md)
 
-Demo figures based on typical usage where users only need partial analysis. Actual token usage varies by provider, model, and prompt.
+## 🚀 Getting started
 
-## 💡 How It Works
-
-- Ask a question: The app generates multiple thinking approaches tailored to your prompt.
-- Choose steps: Execute steps cumulatively (1..N) or select any subset (e.g., 1 and 3).
-- Review structured output: Responses emphasize clarity and key takeaways.
-- Continue the conversation: New approaches are generated based on prior context.
-- Bring in data: Upload a small CSV; its summary and context automatically enrich follow-up questions without starting a new chat.
-
-This approach gives you control over depth and direction, reduces unnecessary tokens, and keeps your reasoning organized and transparent.
-
-## Features
-
-- Thinking Approaches
-  - Multiple approaches per question, each with three clear steps.
-  - Cumulative execution: click ▶ on a step to execute from step 1 up to that step.
-  - Multi-select execution: choose any steps with checkboxes and click “Run Selected Steps”.
-  - Structured responses using bold highlights and lists for readability.
-
-- Conversation Awareness
-  - Conversations persist in the sidebar with titles.
-  - Follow-ups auto-update approaches based on context.
-  - CSV insights are included in follow-up questions automatically; no new chat is created after analysis.
-
-- CSV Insights (MVP)
-  - Upload small CSV files (≤ 200 KB) for a quick, structured analysis in markdown.
-  - The analysis summaries are stored in the current conversation for follow-ups.
-
-- UI/UX
-  - Modern layout with a status bar and window controls.
-  - Keyboard shortcuts: `Ctrl+W` close window, `Ctrl+M` minimize.
-
-## Requirements
-
-- Node.js 18+ recommended.
-- An LLM API key configured via environment variables.
-- Windows/macOS desktop (Electron); browser preview is supported for UI testing.
-
-## Installation
+**Requirements:** Node.js 20+, Python 3.10+, and at least one of: a free Groq key, a free Gemini key, or
+[Ollama](https://ollama.com) running locally.
 
 ```bash
+git clone https://github.com/DevPatel2020/StratifyAi.git
+cd StratifyAi
 npm install
 ```
 
-## Running the App (Desktop)
+Create your `.env` from the template and add your own keys (it is git-ignored, never commit it):
 
 ```bash
-npm start
+cp .env.example .env
 ```
 
-This launches the Electron desktop app with full functionality (thinking approaches, CSV analysis, IPC).
+| Variable | Default | Notes |
+|---|---|---|
+| `GROQ_API_KEY` | – | <https://console.groq.com/keys> (free) |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | any chat model your Groq account lists |
+| `GEMINI_API_KEY` | – | <https://aistudio.google.com/apikey> (free) |
+| `GEMINI_MODEL` | `gemini-2.5-flash-lite` | |
+| `OLLAMA_MODEL` / `OLLAMA_FAST_MODEL` | `llama3.1` / `llama3.2` | `ollama pull llama3.1` |
+| `EMBEDDINGS` | `chroma` | `chroma` (bundled ONNX MiniLM) or `ollama` (`nomic-embed-text`) |
 
-## Optional: Browser Preview
+Set up the Python AI service (creates `ai-service/.venv`, installs packages, trains the classifier):
 
 ```bash
-node server.js
-# Open the printed URL (e.g., http://localhost:5500/)
+npm run ai:setup
 ```
 
-Notes:
-- Browser preview is for UI only. CSV analysis and some desktop-only features are disabled because they rely on Electron IPC.
+Run the app (the AI service is started automatically):
 
-## Usage
-
-1) Ask a Question
-- Type your question (e.g., `what is ml?`).
-- The app generates multiple thinking approaches with three steps each.
-
-2) Execute Steps
-- Cumulative execution (▶): run steps 1..N for quick progress.
-- Multi-select execution:
-  - Expand an approach.
-  - Tick any steps you want (e.g., 1 and 3).
-  - Click “Run Selected Steps”.
-  - The response contains only the selected steps’ reasoning — no future steps are proposed.
-
-3) CSV Analysis
-- Upload a small CSV via the CSV panel.
-- A structured analysis appears in the chat (summary + insights).
-- Ask follow-up questions; the app automatically includes CSV context and keeps everything in the same chat.
-
-## 🎯 Use Cases
-
-**💻 Software Development & Debugging**
-- Model debugging with controllable depth of analysis
-- Architecture planning with multiple technical approaches
-- Code review with focused, step-by-step examination
-- Performance optimization with systematic investigation
-
-**🤖 Machine Learning & AI**
-- Training issue diagnosis without information overflow
-- Hyperparameter tuning with guided experimentation
-- Model architecture exploration step by step
-- Data pipeline debugging with structured approaches
-
-**📊 Data Science**
-- Exploratory data analysis with multiple perspectives
-- Feature engineering with incremental discovery
-- Statistical analysis with controlled complexity
-- Visualization planning with step-by-step breakdown
-
-**💼 Technical Leadership**
-- System architecture decisions with guided analysis
-- Technology stack evaluation with structured comparison
-- Technical debt assessment with focused investigation
-- Team problem-solving with methodical approaches
-
-## Configuration
-
-Create a `.env` file in the project root and set one of the following keys:
-
-```env
-GEMINI_API_KEY=your_api_key_here
-# or
-GROQ_API_KEY=your_api_key_here
+```bash
+npm run dev
 ```
 
-Notes:
-- The app looks for `GEMINI_API_KEY` first, then `GROQ_API_KEY`.
-- Do not hardcode provider model names in user-facing docs; keep configuration generic.
+The app still works without the Python service: classification falls back to the LLM, and RAG and
+tools are disabled.
 
-## Project Structure
+## 🧪 Testing & evaluation
 
-- `index.html` — Renderer UI (chat, thinking panel, CSV panel, step selection).
-- `main.js` — Electron main process; handles window controls and IPC:
-  - `generate-thinking-paths` — create approaches for a question.
-  - `execute-thinking-path` — execute steps cumulatively (up to N).
-  - `generate-updated-paths` — auto-update approaches based on conversation progress.
-  - `analyze-csv` — analyze uploaded CSV and return a markdown summary.
-  - `execute-thinking-steps` — execute exactly the selected steps (multi-select mode).
-- `server.js` — Simple static server for browser preview.
-- `package.json` — Scripts and dependencies.
+```bash
+npm run typecheck && npm run lint && npm test     # TypeScript: router fallback, pipeline, components
+cd ai-service && .venv/Scripts/python -m pytest   # Python: calculator safety, chunking, classifier, API
+npm run ai:train                                  # retrain + report classifier metrics
+npm run ai:eval                                   # token savings, path quality, latency, RAG benchmark
+```
 
-## Development
+Results appear on the **Evaluation** page. CI runs both test suites on every push.
 
-- Start in development:
-  ```bash
-  npm start
-  ```
-- Optional watch/dev combo (requires `concurrently` and `nodemon` configured):
-  ```bash
-  npm run dev
-  ```
+## 🔐 Security
 
-## Troubleshooting
+- Renderer is sandboxed (`contextIsolation`, `sandbox`, no Node integration); only a typed preload API is exposed.
+- Strict Content-Security-Policy; external links open in the system browser.
+- Model output is rendered as Markdown without raw HTML, so model output cannot inject scripts.
+- User input is wrapped in delimiters to reduce prompt injection.
+- API keys live only in `.env`; they are never stored in the database or shown in the UI.
+- The calculator tool uses an AST whitelist, never `eval`.
 
-- “Disconnected” status or no responses
-  - Ensure your `.env` contains a valid API key.
-  - Check network connectivity and any corporate proxies.
+## 📦 Build an installer
 
-- CSV button disabled
-  - CSV analysis requires the Electron app. In browser preview, it is disabled.
+```bash
+npm run dist     # Windows NSIS installer in release/
+```
 
-- Port already in use (browser preview)
-  - Set a different `PORT` env var before starting `server.js`.
+## 🗺️ Project structure
 
-## Roadmap
+```
+src/main/        Electron main: engine, LLM router & providers, pipeline, SQLite, IPC, export
+src/preload/     contextBridge API exposed to the renderer
+src/renderer/    React app: pages, components, Zustand store
+src/shared/      types shared across processes
+ai-service/      FastAPI service: classifier, RAG, tools, dataset, training & evaluation scripts
+tests/           Vitest unit and component tests
+docs/            architecture, evaluation method, report outline
+```
 
-- Export conversations as structured documents.
-- Save custom thinking templates.
-- Collaboration and shared sessions.
-- Voice input and richer modalities.
+## License
 
-## 🔮 Future Development
-
-- Deeper dataset tools (joins, schema inference, visual summaries)
-- Custom approach templates and saved thinking styles
-- Collaboration features (shared sessions, review annotations)
-- Export and report generation (Markdown/HTML/PDF)
-
+MIT © Dev Patel

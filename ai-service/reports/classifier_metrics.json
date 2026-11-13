@@ -1,0 +1,171 @@
+{
+  "best_model": "Logistic Regression",
+  "timestamp": 1794592564,
+  "n_train": 600,
+  "n_test": 40,
+  "n_generated": 440,
+  "test_set": "hand-written only",
+  "labels": [
+    "coding",
+    "data_analysis",
+    "business_strategy",
+    "learning",
+    "decision_making",
+    "creative",
+    "research",
+    "personal_planning"
+  ],
+  "accuracy": 0.775,
+  "macro_f1": 0.7666035353535354,
+  "cv_mean": 0.7716666666666667,
+  "cv_std": 0.022110831935702693,
+  "per_class": {
+    "coding": {
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1-score": 0.8,
+      "support": 5.0
+    },
+    "data_analysis": {
+      "precision": 0.6666666666666666,
+      "recall": 0.8,
+      "f1-score": 0.7272727272727273,
+      "support": 5.0
+    },
+    "business_strategy": {
+      "precision": 0.7142857142857143,
+      "recall": 1.0,
+      "f1-score": 0.8333333333333334,
+      "support": 5.0
+    },
+    "learning": {
+      "precision": 1.0,
+      "recall": 0.6,
+      "f1-score": 0.75,
+      "support": 5.0
+    },
+    "decision_making": {
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1-score": 0.8,
+      "support": 5.0
+    },
+    "creative": {
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1-score": 0.8888888888888888,
+      "support": 5.0
+    },
+    "research": {
+      "precision": 0.6666666666666666,
+      "recall": 0.4,
+      "f1-score": 0.5,
+      "support": 5.0
+    },
+    "personal_planning": {
+      "precision": 0.7142857142857143,
+      "recall": 1.0,
+      "f1-score": 0.8333333333333334,
+      "support": 5.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      4,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      5,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      3,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0,
+      4,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      2,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5
+    ]
+  ],
+  "model_comparison": {
+    "Logistic Regression": {
+      "cv_accuracy": 0.7716666666666667,
+      "cv_accuracy_std": 0.022110831935702693,
+      "cv_macro_f1": 0.7689288143874093
+    },
+    "Linear SVM (calibrated)": {
+      "cv_accuracy": 0.76,
+      "cv_accuracy_std": 0.008164965809277286,
+      "cv_macro_f1": 0.7584120766902916
+    },
+    "Complement Naive Bayes": {
+      "cv_accuracy": 0.7416666666666667,
+      "cv_accuracy_std": 0.02173067468400883,
+      "cv_macro_f1": 0.7387684180438899
+    }
+  }
+}

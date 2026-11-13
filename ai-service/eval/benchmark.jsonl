@@ -1,0 +1,40 @@
+{"type": "coding", "question": "How do I find and fix a memory leak in a Node.js server?"}
+{"type": "coding", "question": "What is the best way to structure state management in a large React app?"}
+{"type": "coding", "question": "Why are my Python unit tests passing locally but failing in CI?"}
+{"type": "coding", "question": "How should I design a REST API for a library management system?"}
+{"type": "coding", "question": "How can I speed up a slow PostgreSQL query on a 10 million row table?"}
+{"type": "data_analysis", "question": "How do I find out why customer churn increased last quarter?"}
+{"type": "data_analysis", "question": "What analysis should I run on a dataset of student exam results?"}
+{"type": "data_analysis", "question": "How can I forecast monthly sales for a small retail shop?"}
+{"type": "data_analysis", "question": "How do I evaluate whether an A/B test result is reliable?"}
+{"type": "data_analysis", "question": "Which metrics should a food delivery app track to measure success?"}
+{"type": "business_strategy", "question": "How can a new bakery attract customers in a competitive neighbourhood?"}
+{"type": "business_strategy", "question": "What pricing strategy should a student-focused SaaS tool use?"}
+{"type": "business_strategy", "question": "How can a local bookstore grow its online sales?"}
+{"type": "business_strategy", "question": "How should an ed-tech startup reduce customer acquisition cost?"}
+{"type": "business_strategy", "question": "What should a startup do in its first 90 days after launch?"}
+{"type": "learning", "question": "Explain how large language models generate text"}
+{"type": "learning", "question": "What is the difference between TCP and UDP?"}
+{"type": "learning", "question": "How does public key encryption keep messages secure?"}
+{"type": "learning", "question": "Explain overfitting in machine learning and how to prevent it"}
+{"type": "learning", "question": "What is the time value of money?"}
+{"type": "decision_making", "question": "Should I choose a master's in data science or start working as a developer?"}
+{"type": "decision_making", "question": "Should my team use microservices or a monolith for a new product?"}
+{"type": "decision_making", "question": "Is it better to learn Flutter or React Native in 2026?"}
+{"type": "decision_making", "question": "Should I accept a remote job with lower pay or an office job with higher pay?"}
+{"type": "decision_making", "question": "Should a small company build or buy its CRM software?"}
+{"type": "creative", "question": "Give me ideas for a mobile app that helps students manage stress"}
+{"type": "creative", "question": "Brainstorm a theme and activities for a college hackathon"}
+{"type": "creative", "question": "Suggest a concept for a short film about artificial intelligence"}
+{"type": "creative", "question": "How can I make my portfolio website stand out to recruiters?"}
+{"type": "creative", "question": "Come up with a marketing campaign idea for a reusable bottle brand"}
+{"type": "research", "question": "How should I design a study on the effect of social media on productivity?"}
+{"type": "research", "question": "What are the main approaches to reducing hallucinations in LLMs?"}
+{"type": "research", "question": "How do I structure a literature review for my final year project?"}
+{"type": "research", "question": "What evidence exists on the effectiveness of online learning?"}
+{"type": "research", "question": "How do I choose an evaluation metric for a recommendation system study?"}
+{"type": "personal_planning", "question": "Create a plan to prepare for software engineering interviews in 8 weeks"}
+{"type": "personal_planning", "question": "How can I balance final year project work with exam preparation?"}
+{"type": "personal_planning", "question": "Help me plan a monthly budget as a first-year employee"}
+{"type": "personal_planning", "question": "How do I build a daily routine to learn machine learning?"}
+{"type": "personal_planning", "question": "Plan my transition from college student to full-time professional"}

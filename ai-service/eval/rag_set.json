@@ -1,0 +1,52 @@
+[
+  {
+    "question": "When was the Nimbus Labs campus cafeteria renovated?",
+    "keyword": "2023",
+    "answer": "It was renovated in March 2023."
+  },
+  {
+    "question": "How many vacation days do new Nimbus Labs employees get?",
+    "keyword": "18",
+    "answer": "New employees receive 18 paid vacation days per year."
+  },
+  {
+    "question": "What is the code review policy at Nimbus Labs?",
+    "keyword": "two approvals",
+    "answer": "Every pull request needs two approvals, one from a senior engineer."
+  },
+  {
+    "question": "Which database does the Orion project use?",
+    "keyword": "PostgreSQL",
+    "answer": "Orion uses PostgreSQL 16 with read replicas."
+  },
+  {
+    "question": "What is the on-call rotation length?",
+    "keyword": "one week",
+    "answer": "On-call rotations last one week, handed over on Mondays at 10:00."
+  },
+  {
+    "question": "What is the budget for the learning stipend?",
+    "keyword": "1,200",
+    "answer": "Each employee has a learning stipend of 1,200 euros per year."
+  },
+  {
+    "question": "What is the target latency for the Orion search API?",
+    "keyword": "200 ms",
+    "answer": "The p95 latency target is 200 ms."
+  },
+  {
+    "question": "Who approves production deployments on Fridays?",
+    "keyword": "engineering manager",
+    "answer": "Friday deployments need approval from the engineering manager on duty."
+  },
+  {
+    "question": "What are the core collaboration hours?",
+    "keyword": "11:00",
+    "answer": "Core hours are 11:00 to 15:00 local time."
+  },
+  {
+    "question": "How long are application logs retained?",
+    "keyword": "30 days",
+    "answer": "Application logs are retained for 30 days, audit logs for one year."
+  }
+]

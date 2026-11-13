@@ -1,0 +1,92 @@
+{
+  "timestamp": 1794592734,
+  "main_provider": "groq",
+  "judge_provider": "ollama",
+  "n_questions": 8,
+  "token_savings": {
+    "full_tokens": 16423,
+    "step1_tokens": 8861,
+    "step2_tokens": 9929,
+    "step1_vs_full": 0.4605,
+    "step2_vs_full": 0.3954
+  },
+  "path_quality": {
+    "relevance": 4.667,
+    "diversity": 4.333,
+    "actionability": 4.667,
+    "overall": 4.556
+  },
+  "per_question": [
+    {
+      "question": "How do I find and fix a memory leak in a Node.js server?",
+      "type": "coding",
+      "full_tokens": 2095,
+      "step1_tokens": 1173,
+      "step2_tokens": 1224
+    },
+    {
+      "question": "How do I find out why customer churn increased last quarter?",
+      "type": "data_analysis",
+      "full_tokens": 2007,
+      "step1_tokens": 872,
+      "step2_tokens": 1183
+    },
+    {
+      "question": "How can a new bakery attract customers in a competitive neighbourhood?",
+      "type": "business_strategy",
+      "full_tokens": 2072,
+      "step1_tokens": 1177,
+      "step2_tokens": 1228
+    },
+    {
+      "question": "Explain how large language models generate text",
+      "type": "learning",
+      "full_tokens": 1851,
+      "step1_tokens": 1065,
+      "step2_tokens": 980
+    },
+    {
+      "question": "Should I choose a master's in data science or start working as a developer?",
+      "type": "decision_making",
+      "full_tokens": 2125,
+      "step1_tokens": 975,
+      "step2_tokens": 1498
+    },
+    {
+      "question": "Give me ideas for a mobile app that helps students manage stress",
+      "type": "creative",
+      "full_tokens": 2154,
+      "step1_tokens": 1084,
+      "step2_tokens": 1110
+    },
+    {
+      "question": "How should I design a study on the effect of social media on productivity?",
+      "type": "research",
+      "full_tokens": 1964,
+      "step1_tokens": 1105,
+      "step2_tokens": 1273
+    },
+    {
+      "question": "Create a plan to prepare for software engineering interviews in 8 weeks",
+      "type": "personal_planning",
+      "full_tokens": 2155,
+      "step1_tokens": 1410,
+      "step2_tokens": 1433
+    }
+  ],
+  "latency": {
+    "groq": {
+      "median_ms": 1873,
+      "runs": 3
+    },
+    "ollama": {
+      "median_ms": 18155,
+      "runs": 3
+    }
+  },
+  "rag": {
+    "cases": 10,
+    "hit_rate": 1.0,
+    "faithfulness": 5.0
+  }
+}

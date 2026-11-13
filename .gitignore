@@ -1,2 +1,35 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Environment variables (never commit API keys)
 .env
+.env.*
+!.env.example
+
+# Build outputs
+out/
+dist/
+build/
+release/
+
+# Python AI service
+ai-service/.venv/
+ai-service/chroma/
+ai-service/data/uploads/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
