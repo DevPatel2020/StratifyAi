@@ -1,0 +1,144 @@
+{
+  "timestamp": 1794596994,
+  "main_provider": "groq",
+  "judge_provider": "gemini",
+  "n_questions": 16,
+  "token_savings": {
+    "full_tokens": 34462,
+    "step1_tokens": 20438,
+    "step2_tokens": 24924,
+    "step1_vs_full": 0.4069,
+    "step2_vs_full": 0.2768
+  },
+  "path_quality": {
+    "relevance": 4.667,
+    "diversity": 4.0,
+    "actionability": 3.833,
+    "overall": 4.167
+  },
+  "per_question": [
+    {
+      "question": "How do I find and fix a memory leak in a Node.js server?",
+      "type": "coding",
+      "full_tokens": 2156,
+      "step1_tokens": 1376,
+      "step2_tokens": 1658
+    },
+    {
+      "question": "How do I find out why customer churn increased last quarter?",
+      "type": "data_analysis",
+      "full_tokens": 2153,
+      "step1_tokens": 1177,
+      "step2_tokens": 2046
+    },
+    {
+      "question": "How can a new bakery attract customers in a competitive neighbourhood?",
+      "type": "business_strategy",
+      "full_tokens": 2153,
+      "step1_tokens": 1293,
+      "step2_tokens": 1406
+    },
+    {
+      "question": "Explain how large language models generate text",
+      "type": "learning",
+      "full_tokens": 2149,
+      "step1_tokens": 851,
+      "step2_tokens": 1394
+    },
+    {
+      "question": "Should I choose a master's in data science or start working as a developer?",
+      "type": "decision_making",
+      "full_tokens": 2156,
+      "step1_tokens": 1281,
+      "step2_tokens": 1608
+    },
+    {
+      "question": "Give me ideas for a mobile app that helps students manage stress",
+      "type": "creative",
+      "full_tokens": 2154,
+      "step1_tokens": 1245,
+      "step2_tokens": 1612
+    },
+    {
+      "question": "How should I design a study on the effect of social media on productivity?",
+      "type": "research",
+      "full_tokens": 2156,
+      "step1_tokens": 1095,
+      "step2_tokens": 1488
+    },
+    {
+      "question": "Create a plan to prepare for software engineering interviews in 8 weeks",
+      "type": "personal_planning",
+      "full_tokens": 2155,
+      "step1_tokens": 1580,
+      "step2_tokens": 1828
+    },
+    {
+      "question": "What is the best way to structure state management in a large React app?",
+      "type": "coding",
+      "full_tokens": 2156,
+      "step1_tokens": 2017,
+      "step2_tokens": 1555
+    },
+    {
+      "question": "What analysis should I run on a dataset of student exam results?",
+      "type": "data_analysis",
+      "full_tokens": 2154,
+      "step1_tokens": 1333,
+      "step2_tokens": 1391
+    },
+    {
+      "question": "What pricing strategy should a student-focused SaaS tool use?",
+      "type": "business_strategy",
+      "full_tokens": 2153,
+      "step1_tokens": 1263,
+      "step2_tokens": 1338
+    },
+    {
+      "question": "What is the difference between TCP and UDP?",
+      "type": "learning",
+      "full_tokens": 2150,
+      "step1_tokens": 1048,
+      "step2_tokens": 1324
+    },
+    {
+      "question": "Should my team use microservices or a monolith for a new product?",
+      "type": "decision_making",
+      "full_tokens": 2156,
+      "step1_tokens": 1346,
+      "step2_tokens": 1910
+    },
+    {
+      "question": "Brainstorm a theme and activities for a college hackathon",
+      "type": "creative",
+      "full_tokens": 2153,
+      "step1_tokens": 1205,
+      "step2_tokens": 1417
+    },
+    {
+      "question": "What are the main approaches to reducing hallucinations in LLMs?",
+      "type": "research",
+      "full_tokens": 2155,
+      "step1_tokens": 1209,
+      "step2_tokens": 1182
+    },
+    {
+      "question": "How can I balance final year project work with exam preparation?",
+      "type": "personal_planning",
+      "full_tokens": 2153,
+      "step1_tokens": 1119,
+      "step2_tokens": 1767
+    }
+  ],
+  "latency": {
+    "groq": {
+      "median_ms": 883,
+      "runs": 3
+    }
+  },
+  "rag": {
+    "cases": 10,
+    "hit_rate": 1.0,
+    "faithfulness": null
+  }
+}

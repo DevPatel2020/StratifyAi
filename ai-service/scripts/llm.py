@@ -7,6 +7,7 @@ Keys come from the project's .env file and are never printed.
 from __future__ import annotations
 
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -49,10 +50,36 @@ def available() -> list[str]:
     return out
 
 
-def chat(provider: str, messages: list[dict], *, json_mode: bool = False, max_tokens: int = 1024, temperature: float = 0.7) -> dict:
-    """Returns {text, prompt_tokens, completion_tokens, latency_ms}. Retries on rate limits."""
+def reset_seconds(message: str) -> float | None:
+    """Parse 'try again in 1m30.5s' / 'retry in 12h30m' / 'try again in 217ms' from a 429 body."""
+    m = re.search(r"(?:try|retry)(?: again)? in ([\d.]+ms|(?:[\d.]+h)?(?:[\d.]+m(?!s))?(?:[\d.]+s)?)", message)
+    if not m or not m.group(1):
+        return None
+    text = m.group(1)
+    if text.endswith("ms") and "m" not in text[:-2]:
+        return float(text[:-2]) / 1000
+    total = 0.0
+    for value, unit in re.findall(r"([\d.]+)(h|m(?!s)|s)", text):
+        total += float(value) * {"h": 3600, "m": 60, "s": 1}[unit]
+    return total or None
+
+
+class QuotaExhausted(RuntimeError):
+    """Raised when a provider's per-day (or otherwise long) quota is used up; callers should switch provider."""
+
+
+def chat(
+    provider: str,
+    messages: list[dict],
+    *,
+    json_mode: bool = False,
+    max_tokens: int = 1024,
+    temperature: float = 0.7,
+    model: str | None = None,
+) -> dict:
+    """Returns {text, prompt_tokens, completion_tokens, latency_ms}. Retries short rate limits."""
     p = PROVIDERS[provider]
-    model = p["model"]()
+    model = model or p["model"]()
     reasoning = any(tag in model.lower() for tag in ("gpt-oss", "qwen3", "deepseek-r1"))
     body = {"model": model, "messages": messages, "max_tokens": max(max_tokens, 600) if reasoning else max_tokens, "temperature": temperature}
     if provider == "groq" and "gpt-oss" in model:
@@ -63,8 +90,12 @@ def chat(provider: str, messages: list[dict], *, json_mode: bool = False, max_to
         started = time.perf_counter()
         r = httpx.post(p["url"], json=body, headers={"Authorization": f"Bearer {p['key']()}"}, timeout=300)
         latency = (time.perf_counter() - started) * 1000
-        if r.status_code == 429 and attempt < 3:
-            wait = float(r.headers.get("retry-after", 2 ** (attempt + 2)))
+        if r.status_code == 429:
+            wait = reset_seconds(r.text)
+            if wait is None:
+                wait = float(r.headers.get("retry-after", 2 ** (attempt + 2)))
+            if wait > 90 or attempt == 3:
+                raise QuotaExhausted(f"{provider}: rate limit resets in {wait:.0f}s")
             print(f"  rate limited by {provider}, waiting {wait:.0f}s")
             time.sleep(min(wait, 60))
             continue

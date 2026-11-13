@@ -150,7 +150,12 @@ export function EvaluationPage() {
             {e.latency && (
               <ChartCard title="Median latency by provider" description="Same short prompt, 3 runs each">
                 <ResponsiveContainer>
-                  <BarChart data={Object.entries(e.latency).map(([p, v]: [string, any]) => ({ provider: p, ms: v.median_ms }))} margin={{ left: 4, right: 8, top: 8 }}>
+                  <BarChart
+                    data={Object.entries(e.latency)
+                      .filter(([, v]: [string, any]) => typeof v === 'object' && v?.median_ms)
+                      .map(([p, v]: [string, any]) => ({ provider: p, ms: v.median_ms }))}
+                    margin={{ left: 4, right: 8, top: 8 }}
+                  >
                     <CartesianGrid {...gridProps} />
                     <XAxis dataKey="provider" {...axisProps} />
                     <YAxis {...axisProps} width={52} tickFormatter={(v) => formatMs(v)} />

@@ -98,4 +98,53 @@ describe.skipIf(!live)('live pipeline', () => {
     console.log(`calls ${usage.totals.calls}, failures ${usage.totals.failures}`)
     expect(fallbacks).toBe(0)
   }, 240_000)
+
+  it('runs the pipeline on Gemini and judges a Groq-vs-Gemini comparison', async (ctx) => {
+    dotenv.config()
+    if (!process.env.GEMINI_API_KEY) return ctx.skip()
+    const { SqliteStore } = await import('../../src/main/db/database')
+    const { Repository } = await import('../../src/main/db/repository')
+    const { LLMRouter } = await import('../../src/main/llm/router')
+    const { createProviders } = await import('../../src/main/llm/openaiCompat')
+    const { AiServiceClient } = await import('../../src/main/aiService')
+    const { StratifyEngine } = await import('../../src/main/engine')
+
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'stratify-live-'))
+    const store = new SqliteStore(path.join(dir, 'test.sqlite'))
+    await store.open()
+    const repo = new Repository(store)
+    repo.saveSettings({ ...repo.getSettings(), providerOrder: ['gemini', 'groq'], useCritique: true })
+    const router = new LLMRouter(createProviders(process.env, () => repo.getSettings().models), () => repo.getSettings(), repo)
+    const ai = new AiServiceClient(path.join(process.cwd(), 'ai-service'))
+    await ai.status()
+    const engine = new StratifyEngine(repo, router, ai, () => {})
+    try {
+      await router.chat([{ role: 'user', content: 'ping' }], { purpose: 'ping', only: 'gemini', maxTokens: 5 })
+    } catch (err: any) {
+      // free tier is 20 requests/day for gemini-2.5-flash-lite; don't fail the suite on an exhausted quota
+      if (/429|quota/i.test(err?.message ?? '')) return ctx.skip()
+      throw err
+    }
+
+    const asked = await engine.ask({ conversationId: null, question: 'How can a small café increase revenue in 6 months?', parentId: null })
+    const p = asked.message.meta.paths![0]
+    const answer = await engine.execute({
+      requestId: 'g1',
+      conversationId: asked.conversation.id,
+      parentId: asked.message.id,
+      pathName: p.name,
+      framework: p.framework,
+      steps: p.steps,
+      selected: [1]
+    })
+    console.log(`gemini paths: ${asked.message.meta.paths!.map((x) => x.name).join(' | ')}`)
+    console.log(`gemini answer via ${answer.meta.provider}/${answer.meta.model}, critique ${JSON.stringify(answer.meta.critique)}`)
+    expect(answer.meta.provider).toBe('gemini')
+    expect(answer.meta.critique?.score).toBeGreaterThan(0)
+
+    const lab = await engine.compare('In 3 bullet points, why do startups fail?', ['groq', 'gemini'])
+    for (const r of lab) console.log(`lab ${r.provider}: ok=${r.ok} ${r.latencyMs}ms scores=${JSON.stringify(r.scores)}`)
+    expect(lab.every((r) => r.ok)).toBe(true)
+    expect(lab.every((r) => r.scores && r.scores.overall > 0)).toBe(true)
+  }, 240_000)
 })

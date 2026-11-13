@@ -30,16 +30,20 @@ is honest about StratifyAI's overhead.
 
 ## 3. Path quality (LLM-as-judge)
 
-A judge model (Gemini when the main model is Groq, so the judge differs from the generator) rates
-the 4 paths per question from 1 to 5 for **relevance**, **diversity** and **actionability**. Known limitations
+A judge model from a different model family than the generator rates
+the 4 paths per question from 1 to 5 for **relevance**, **diversity** and **actionability**.
+The judge is Gemini when its quota allows; otherwise it automatically falls back to Qwen on Groq
+(`qwen/qwen3.8-27b`), so the generator (`gpt-oss-120b`) never grades its own output. The results file
+records which judge produced each score (`judge_calls`). Known limitations
 to discuss in the report: judge bias, positional bias, and no human calibration. A small human rating
 of 10 questions is recommended as a sanity check.
 
 ## 4. Provider latency
 
 The same short prompt is sent 3 times to every available provider (Groq cloud, Gemini cloud, Ollama
-local); the median is reported. The interesting comparison is Groq `llama-3.1-8b-instant` vs. the
-same model running locally in Ollama: same weights, different hardware.
+local); the median is reported. The comparison shows the cost of privacy and offline use: a 120B model on
+Groq's inference hardware vs. an 8B model (`llama3.1`, Q4) on a student laptop CPU. Note the models differ,
+so this measures the deployment option end to end, not hardware alone.
 
 ## 5. Retrieval-augmented generation
 
@@ -54,9 +58,13 @@ from pre-training. For 10 questions (`eval/rag_set.json`):
 ```bash
 npm run ai:eval                         # 10 questions (default)
 node scripts/run-python.mjs eval/run_eval.py --limit 40   # full benchmark
+# re-run only some sections (others are kept from the last results), e.g. RAG answered by local Ollama:
+node scripts/run-python.mjs eval/run_eval.py --sections latency,rag --main ollama
 ```
 
-Free-tier rate limits apply; the scripts back off and retry on HTTP 429.
+Free-tier rate limits apply; the scripts back off and retry on short HTTP 429s. Note that the Gemini free
+tier for `gemini-2.5-flash-lite` can be as low as **20 requests per day**; when it is exhausted the scripts
+switch judge instead of waiting.
 
 ## Suggested user study
 

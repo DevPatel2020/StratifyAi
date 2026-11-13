@@ -49,6 +49,19 @@ export function shortRateLimitWait(err: any): number | null {
   return Math.ceil(ms) + 250
 }
 
+/**
+ * For HTTP 429 quota errors with a long reset ("Please retry in 12h30m37s", per-day limits), returns the
+ * cooldown in ms so the router can skip that provider until the quota resets. Unknown resets → 60 s.
+ */
+export function quotaCooldown(err: any): number | null {
+  if ((err?.status ?? err?.response?.status) !== 429 || shortRateLimitWait(err) !== null) return null
+  const m = /(?:try|retry)(?: again)? in (?:([\d.]+)h)?(?:([\d.]+)m(?!s))?(?:([\d.]+)s)?/i.exec(err?.message ?? '')
+  if (!m) return 60_000
+  const [h, min, sec] = [m[1], m[2], m[3]].map((v) => Number(v ?? 0))
+  const ms = (h * 3600 + min * 60 + sec) * 1000
+  return ms > 0 ? ms : 60_000
+}
+
 const sleep = (ms: number, signal?: AbortSignal) =>
   new Promise<void>((resolve, reject) => {
     const t = setTimeout(resolve, ms)
@@ -63,6 +76,8 @@ const isAbort =(err: any) => err?.name === 'AbortError' || err?.name === 'APIUse
  */
 export class LLMRouter {
   private ollamaCache: { ok: boolean; at: number } = { ok: false, at: 0 }
+  /** provider → time until which it is skipped (exhausted daily/minute quota) */
+  private cooldownUntil = new Map<ProviderId, number>()
 
   constructor(
     private readonly providers: Record<ProviderId, LLMProvider>,
@@ -88,6 +103,7 @@ export class LLMRouter {
     for (const id of ids) {
       const p = this.providers[id]
       if (!p.isConfigured()) continue
+      if (!opts.only && (this.cooldownUntil.get(id) ?? 0) > Date.now()) continue
       if (id === 'ollama' && !opts.only && !(await this.ollamaUp())) continue
       out.push(p)
     }
@@ -128,6 +144,8 @@ export class LLMRouter {
         } catch (err) {
           if (isAbort(err)) throw err
           this.record(p, opts, null, err, started)
+          const cooldown = quotaCooldown(err)
+          if (cooldown) this.cooldownUntil.set(p.id, Date.now() + cooldown)
           const wait = shortRateLimitWait(err)
           if (retry < 2 && canFallback() && (isTransientJsonError(err) || wait !== null)) {
             if (wait) await sleep(wait, opts.signal)

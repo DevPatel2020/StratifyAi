@@ -75,7 +75,7 @@ cp .env.example .env
 | `GROQ_API_KEY` | – | <https://console.groq.com/keys> (free) |
 | `GROQ_MODEL` | `openai/gpt-oss-120b` | any chat model your Groq account lists |
 | `GEMINI_API_KEY` | – | <https://aistudio.google.com/apikey> (free) |
-| `GEMINI_MODEL` | `gemini-2.5-flash-lite` | |
+| `GEMINI_MODEL` | `gemini-2.5-flash-lite` | free tier may allow only ~20 requests/day; the router skips Gemini until its quota resets |
 | `OLLAMA_MODEL` / `OLLAMA_FAST_MODEL` | `llama3.1` / `llama3.2` | `ollama pull llama3.1` |
 | `EMBEDDINGS` | `chroma` | `chroma` (bundled ONNX MiniLM) or `ollama` (`nomic-embed-text`) |
 

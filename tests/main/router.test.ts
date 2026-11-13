@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { ProviderId, Settings } from '@shared/types'
-import { LLMRouter, AllProvidersFailedError, shortRateLimitWait } from '../../src/main/llm/router'
+import { LLMRouter, AllProvidersFailedError, quotaCooldown, shortRateLimitWait } from '../../src/main/llm/router'
 import type { LLMProvider, LLMResult } from '../../src/main/llm/types'
 
 const settings: Settings = {
@@ -130,6 +130,25 @@ describe('LLMRouter', () => {
     expect(shortRateLimitWait({ status: 429, message: 'Please try again in 217.5ms' })).toBe(468)
     expect(shortRateLimitWait({ status: 429, message: 'Please try again in 7m12s' })).toBeNull()
     expect(shortRateLimitWait({ status: 500, message: 'try again in 1s' })).toBeNull()
+  })
+
+  it('parses long quota resets into a cooldown', () => {
+    expect(quotaCooldown({ status: 429, message: 'Quota exceeded. Please retry in 12h30m37.45s.' })).toBeCloseTo((12 * 3600 + 30 * 60 + 37.45) * 1000, 0)
+    expect(quotaCooldown({ status: 429, message: 'daily limit reached' })).toBe(60_000)
+    expect(quotaCooldown({ status: 429, message: 'Please try again in 2s' })).toBeNull() // short wait, retried instead
+    expect(quotaCooldown({ status: 500, message: 'retry again in 1h' })).toBeNull()
+  })
+
+  it('skips a provider whose daily quota is exhausted until it resets', async () => {
+    const gemini = fakeProvider('gemini', 'ok')
+    gemini.chat = vi.fn(async () => {
+      throw Object.assign(new Error('Quota exceeded. Please retry in 5h0m0s.'), { status: 429 })
+    }) as any
+    const s: Settings = { ...settings, providerOrder: ['gemini', 'groq', 'ollama'] }
+    const router = new LLMRouter({ groq: fakeProvider('groq', 'ok'), gemini, ollama: fakeProvider('ollama', 'ok') }, () => s, sink())
+    expect((await router.chat([], { purpose: 't' })).provider).toBe('groq')
+    expect((await router.chat([], { purpose: 't' })).provider).toBe('groq')
+    expect(gemini.chat).toHaveBeenCalledTimes(1) // second call skipped Gemini entirely
   })
 
   it('honours prefer and only', async () => {
